@@ -63,13 +63,14 @@ def get_scene_images(path):
 	# name = "frames/" + name
 	print (name)
 
-	if os.path.exists("./frames/" + name +"/"):
-		shutil.rmtree("./frames/" + name)
-	os.mkdir("frames/" + name)
+	if os.path.exists("./Hash_Compare/frames/" + name +"/"):
+		shutil.rmtree("./Hash_Compare/frames/" + name)
+	os.mkdir("./Hash_Compare/frames/" + name)
 
 	input_file = path
 
-	scenes = "ffmpeg -i " + '"' + input_file + '"' + " -ss 0 -to " + str(end_time) + ' -vf  "select=' + "'gt(scene," + str(threshold) + ")'," + 'showinfo" -vsync vfr "./frames/' + name + '/' + name + '"%04d.jpg>scenes 2>&1'
+	scenes = "ffmpeg -i " + '"' + input_file + '"' + " -ss 0 -to " + str(end_time) + ' -vf  "select=' + "'gt(scene," + str(
+		threshold) + ")'," + 'showinfo" -vsync vfr "./Hash_Compare/frames/' + name + '/' + name + '"%04d.jpg>scenes 2>&1'
 	# print (scenes)
 	subprocess.call(scenes, shell = True)
 
@@ -97,7 +98,7 @@ def get_hash_from_dir(path):
 def get_hash_video(path):
 	scene_change = get_scene_images(path)
 	name = path.split("/")[-1].split(".")[0]
-	dire_name = "./frames/" + name + "/"
+	dire_name = "./Hash_Compare/frames/" + name + "/"
 	hashlist, images = get_hash_from_dir(dire_name)
 	return hashlist, images, scene_change
 
@@ -110,8 +111,9 @@ def longest_common_subarray(l1, l2):
 			temp = 0
 			cur_array = []
 			cur_indices = []
-			# while ((i+temp < len1) and (j+temp < len2) and (l1[i+temp]-l2[j+temp])<=30):
-			while ((i+temp < len1) and (j+temp < len2) and l1[i+temp] == l2[j+temp]):
+			# print(l1[i+temp]-l2[j+temp])
+			while ((i+temp < len1) and (j+temp < len2) and (l1[i+temp]-l2[j+temp])<=30):
+			# while ((i+temp < len1) and (j+temp < len2) and l1[i+temp] == l2[j+temp]):
 				cur_array.append(l2[j+temp])
 				cur_indices.append(j+temp)
 				temp+=1
@@ -134,7 +136,8 @@ def get_time_string(tsecs):
 
 
 def main():
-	vid = "./videos/"
+	show_folder = "onepiece"
+	vid = "./Hash_Compare/videos/" + show_folder + "/"
 	all_vid = os.listdir(vid)
 	all_vid.sort()
 	try:
@@ -159,21 +162,28 @@ def main():
 	# t3 = time()
 	# print (len(l3), len(l4))
 	# print (t3-t2)
-	print("\nLongest Continuous Match:")
-	subarray, indices = longest_common_subarray(h_1, h_2)
-	for i in indices:
-		print ("Time:", s_2[i], " Image Name:", i_2[i])
+	# print("\nLongest Continuous Match:")
+	# subarray, indices = longest_common_subarray(h_1, h_2)
+	# for i in indices:
+	# 	print ("Time:", s_2[i], " Image Name:", i_2[i])
 
-	print ("n+1 time after Longest Continuous")
-	try:
-		end = indices[-1] + 1
-		print ("Time:", s_2[end], " Image Name:", i_2[i])
-	except:
-		pass
+	# print ("n+1 time after Longest Continuous")
+	# try:
+	# 	end = indices[-1] + 1
+	# 	print ("Time:", s_2[end], " Image Name:", i_2[end])
+	# except:
+	# 	pass
 		
 	print("\nAll the Matches:")
 	indices = common_elements(h_1, h_2)
 	for i in indices:
 		print (i_1[i[1]], s_1[i[1]], ",", i_2[i[0]], s_2[i[0]])
+
+	print("n+1 time after All the matches")
+	try:
+		end = indices[-1]
+		print (i_1[end[1] + 1], s_1[end[1] + 1], ",", i_2[end[0] + 1], s_2[end[0] + 1])
+	except:
+		pass
 
 main()
